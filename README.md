@@ -1,7 +1,9 @@
 # SimpleSharedPref
   
-一个简单的Android的SharedPreferences包装  
-  
+一个简单的Android的SharedPreferences包装
+
+[![](https://jitpack.io/v/Yumenokanata/SimpleSharedPref.svg)](https://jitpack.io/#Yumenokanata/SimpleSharedPref)
+
 可以简单进行自定义
   
 现包括:
@@ -28,9 +30,9 @@ allprojects {
 Step 2. Add the dependency in your module's gradle file
 ```groovy
 dependencies {
-    implementation 'com.github.Yumenokanata.SimpleSharedPref:lib:master'
-    implementation 'com.github.Yumenokanata.SimpleSharedPref:gson-pref:master' // optional
-    implementation 'com.github.Yumenokanata.SimpleSharedPref:moshi-pref:master' // optional
+    implementation 'com.github.Yumenokanata.SimpleSharedPref:core:0.5'
+    implementation 'com.github.Yumenokanata.SimpleSharedPref:gson-pref:0.5' // optional
+    implementation 'com.github.Yumenokanata.SimpleSharedPref:moshi-pref:0.5' // optional
 }
 ```
 

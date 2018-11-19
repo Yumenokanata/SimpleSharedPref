@@ -1,2 +1,1 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="indi.yume.tools.simplesharedpref"/>
+<manifest package="indi.yume.tools.simplesharedpref"/>

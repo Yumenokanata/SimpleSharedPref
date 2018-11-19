@@ -1,1 +1,1 @@
-include ':lib', ':sample', ':moshi-pref', ':gson-pref'
+include ':core', ':sample', ':moshi-pref', ':gson-pref'

@@ -41,3 +41,5 @@ dependencies {
     androidTestImplementation "io.kotlintest:kotlintest:2.0.7"
     testImplementation "io.kotlintest:kotlintest:2.0.7"
 }
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
