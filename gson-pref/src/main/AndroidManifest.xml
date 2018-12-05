@@ -1,3 +1,3 @@
-<manifest package="indi.yume.tools.simplesharedpref">
+<manifest package="indi.yume.tools.simplesharedpref.gson">
     <application/>
 </manifest>
