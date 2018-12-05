@@ -11,8 +11,12 @@ class MainActivity : AppCompatActivity() {
 
         TestModel.string = "test"
         val set = TestModel.stringSet
+        TestModel.list = (1..1000).map { TestBean("note$it") }
+        println(TestModel.list.joinToString())
 
         TestModel.gsonItem = TestBean("note")
         TestModel.gsonItem2 = null
+        TestModel.moshiItem = TestBean("note")
+        println(TestModel.moshiItem2)
     }
 }

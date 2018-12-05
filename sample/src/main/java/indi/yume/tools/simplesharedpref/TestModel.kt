@@ -4,6 +4,10 @@ import android.content.Context
 import com.google.gson.Gson
 import com.squareup.moshi.Moshi
 import indi.yume.tools.simplesharedpref.extensions.*
+import indi.yume.tools.simplesharedpref.gson.byGson
+import indi.yume.tools.simplesharedpref.gson.gsonNullablePref
+import indi.yume.tools.simplesharedpref.moshi.byMoshi
+import indi.yume.tools.simplesharedpref.moshi.moshiPref
 
 
 val beanMapper: Pipe<String, TestBean> = createPipe(write = { it.note }, read = { TestBean(it) })
@@ -34,6 +38,7 @@ object TestModel : PrefModel() {
 
     var list: List<TestBean> by stringSetNullablePref.pipe(
         nonNull(setOf<String>()) pipe list2set()
+                pipe mapList(cipherAES("password"))
                 pipe map<List<String>, List<TestBean>>(write = { bList -> bList.map { it.note } }, read = { sList -> sList.map { TestBean(it) } })
     ).bind()
 
@@ -76,7 +81,7 @@ object TestModel : PrefModel() {
         .pipe(nonNull(TestBean("empty")))
         .bind()
 
-    var gsonItem2: TestBean? by gsonNullablePref<TestBean>().bind()
+    var gsonItem2: TestBean? by gsonNullablePref(TestBean::class.java).bind()
 }
 
 var outterField: TestBean? by stringNullablePref.pipeNullable(beanMapper).bindTo(TestModel)

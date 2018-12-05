@@ -30,9 +30,9 @@ allprojects {
 Step 2. Add the dependency in your module's gradle file
 ```groovy
 dependencies {
-    implementation 'com.github.Yumenokanata.SimpleSharedPref:core:0.5'
-    implementation 'com.github.Yumenokanata.SimpleSharedPref:gson-pref:0.5' // optional
-    implementation 'com.github.Yumenokanata.SimpleSharedPref:moshi-pref:0.5' // optional
+    implementation 'com.github.Yumenokanata.SimpleSharedPref:simplesharedpref:0.6'
+    implementation 'com.github.Yumenokanata.SimpleSharedPref:gson-pref:0.6' // optional
+    implementation 'com.github.Yumenokanata.SimpleSharedPref:moshi-pref:0.6' // optional
 }
 ```
 
@@ -41,6 +41,10 @@ dependencies {
 Sample:
   
 ```kotlin
+import indi.yume.tools.simplesharedpref.extensions.*
+import indi.yume.tools.simplesharedpref.gson.*
+import indi.yume.tools.simplesharedpref.moshi.*
+
 val beanMapper: Pipe<String, TestBean> = createPipe(write = { it.note }, read = { TestBean(it) })
 
 val beanListMapper: Pipe<List<String>, List<TestBean>> = mapList(beanMapper)
@@ -55,6 +59,7 @@ object TestModel : PrefModel() {
 
     var string: String by stringPref("default").bind()
 
+    // 注意, 使用`Set<String>`保存容器, 取出来的时候并不保证之前的保存顺序
     var stringSet: Set<String> by stringSetPref(setOf<String>()).bind(key = "set_key")
 
     var intNum: Int by intPref(-1).bind(key = "int_key", commitWrite = false)

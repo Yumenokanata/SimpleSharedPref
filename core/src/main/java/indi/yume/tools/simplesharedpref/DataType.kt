@@ -2,14 +2,6 @@ package indi.yume.tools.simplesharedpref
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
-import arrow.core.Either
-import arrow.core.Tuple2
-import arrow.core.Tuple3
-import arrow.data.ReaderT
-import arrow.effects.ForIO
-import arrow.effects.IO
-import arrow.effects.fix
-import arrow.effects.instances.io.functor.functor
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -17,55 +9,64 @@ sealed class BaseType<T>(val baseField: SharedField<T>)
 
 object SharedString : BaseType<String?>(
     baseField = SharedField(
-        writer = ReaderT { (ed, k, r) -> IO { ed.putString(k, r); Unit } },
-        reader = ReaderT { (sp, k) -> IO { sp.getString(k, null) } }
+        writer = Reader { (ed, k, r) -> IO { ed.putString(k, r); Unit } },
+        reader = Reader { (sp, k) -> IO { sp.getString(k, null) } }
     )
 )
 
 object SharedStringSet : BaseType<Set<String>?>(
     baseField = SharedField(
-        writer = ReaderT { (ed, k, r) -> IO { ed.putStringSet(k, r); Unit } },
-        reader = ReaderT { (sp, k) -> IO { sp.getStringSet(k, null) } }
+        writer = Reader { (ed, k, r) -> IO { ed.putStringSet(k, r); Unit } },
+        reader = Reader { (sp, k) -> IO { sp.getStringSet(k, null) } }
     )
 )
 
 object SharedInt : BaseType<Int?>(
     baseField = SharedField(
-        writer = ReaderT { (ed, k, r) -> IO { if (r != null) ed.putInt(k, r) else ed.remove(k); Unit } },
-        reader = ReaderT { (sp, k) -> IO { if (sp.contains(k)) sp.getInt(k, 0) else null } }
+        writer = Reader { (ed, k, r) -> IO { if (r != null) ed.putInt(k, r) else ed.remove(k); Unit } },
+        reader = Reader { (sp, k) -> IO { if (sp.contains(k)) sp.getInt(k, 0) else null } }
     )
 )
 
 object SharedLong : BaseType<Long?>(
     baseField = SharedField(
-        writer = ReaderT { (ed, k, r) -> IO { if (r != null) ed.putLong(k, r) else ed.remove(k); Unit } },
-        reader = ReaderT { (sp, k) -> IO { if (sp.contains(k)) sp.getLong(k, 0) else null } }
+        writer = Reader { (ed, k, r) -> IO { if (r != null) ed.putLong(k, r) else ed.remove(k); Unit } },
+        reader = Reader { (sp, k) -> IO { if (sp.contains(k)) sp.getLong(k, 0) else null } }
     )
 )
 
 object SharedFloat : BaseType<Float?>(
     baseField = SharedField(
-        writer = ReaderT { (ed, k, r) -> IO { if (r != null) ed.putFloat(k, r) else ed.remove(k); Unit } },
-        reader = ReaderT { (sp, k) -> IO { if (sp.contains(k)) sp.getFloat(k, 0f) else null } }
+        writer = Reader { (ed, k, r) -> IO { if (r != null) ed.putFloat(k, r) else ed.remove(k); Unit } },
+        reader = Reader { (sp, k) -> IO { if (sp.contains(k)) sp.getFloat(k, 0f) else null } }
     )
 )
 
 object SharedBoolean : BaseType<Boolean?>(
     baseField = SharedField(
-        writer = ReaderT { (ed, k, r) -> IO { if (r != null) ed.putBoolean(k, r) else ed.remove(k); Unit } },
-        reader = ReaderT { (sp, k) -> IO { if (sp.contains(k)) sp.getBoolean(k, false) else null } }
+        writer = Reader { (ed, k, r) -> IO { if (r != null) ed.putBoolean(k, r) else ed.remove(k); Unit } },
+        reader = Reader { (sp, k) -> IO { if (sp.contains(k)) sp.getBoolean(k, false) else null } }
     )
 )
 
 
 typealias PrefKey = String
 
-data class SharedField<T>(
-    val writer: ReaderT<ForIO, Tuple3<SharedPreferences.Editor, PrefKey, T>, Unit>,
-    val reader: ReaderT<ForIO, Tuple2<SharedPreferences, PrefKey>, T>
+data class SharedField<T> internal constructor(
+    internal val writer: Reader<ForIO, Triple<SharedPreferences.Editor, PrefKey, T>, Unit>,
+    internal val reader: Reader<ForIO, Pair<SharedPreferences, PrefKey>, T>
 ) {
+    companion object {
+        operator fun <T> invoke(writer: (Triple<SharedPreferences.Editor, PrefKey, T>) -> Unit,
+                                reader: (Pair<SharedPreferences, PrefKey>) -> T): SharedField<T> =
+            SharedField(
+                writer = Reader { triple -> IO { writer(triple) } },
+                reader = Reader { pair -> IO { reader(pair) } }
+            )
+    }
+
     fun <R> map(wf: (R) -> T, rf: (T) -> R): SharedField<R> =
-            SharedField(ReaderT { (ed, k, r) -> writer.run(Tuple3(ed, k, wf(r))) },
+            SharedField(Reader { (ed, k, r) -> writer.run(Triple(ed, k, wf(r))) },
                 reader.map(IO.functor(), rf))
 
     fun bindTo(prefModel: PrefModel,
@@ -84,7 +85,7 @@ class Binder<T>(
     val prefModel: PrefModel): ReadWriteProperty<Any?, T> {
 
     override operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        val result = field.reader.run(Tuple2(prefModel.sharedPreference, key ?: property.name))
+        val result = field.reader.run(Pair(prefModel.sharedPreference, key ?: property.name))
             .fix().attempt().unsafeRunSync()
 
         return when (result) {
@@ -96,7 +97,7 @@ class Binder<T>(
     @SuppressLint("ApplySharedPref")
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         val editor = prefModel.sharedPreference.edit()
-        val result = field.writer.run(Tuple3(editor, key ?: property.name, value))
+        val result = field.writer.run(Triple(editor, key ?: property.name, value))
             .fix().attempt().unsafeRunSync()
 
         when (result) {

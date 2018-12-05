@@ -24,16 +24,10 @@ android {
     }
 }
 
-def arrow_version = "0.8.1"
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:28.0.0'
-
-    implementation "io.arrow-kt:arrow-data:$arrow_version"
-    implementation "io.arrow-kt:arrow-instances-data:$arrow_version"
-    implementation "io.arrow-kt:arrow-effects:$arrow_version" //optional
-    implementation "io.arrow-kt:arrow-effects-instances:$arrow_version" //optional
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

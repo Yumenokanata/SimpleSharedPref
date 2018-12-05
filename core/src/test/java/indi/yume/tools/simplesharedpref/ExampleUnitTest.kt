@@ -12,6 +12,12 @@ import org.junit.Assert.*
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+//        assertEquals(4, 2 + 2)
+
+        fun test1(s: () -> String) = println("test1")
+
+        test1(::s::get)
     }
 }
+
+val s: String by lazy { println("lazy s."); "sss" }

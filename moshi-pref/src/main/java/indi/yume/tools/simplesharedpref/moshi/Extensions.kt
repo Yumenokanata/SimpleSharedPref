@@ -1,6 +1,9 @@
-package indi.yume.tools.simplesharedpref
+package indi.yume.tools.simplesharedpref.moshi
 
 import com.squareup.moshi.Moshi
+import indi.yume.tools.simplesharedpref.Pipe
+import indi.yume.tools.simplesharedpref.PrefGlobeConfig
+import indi.yume.tools.simplesharedpref.SharedField
 import indi.yume.tools.simplesharedpref.extensions.createPipe
 import indi.yume.tools.simplesharedpref.extensions.nonNull
 import indi.yume.tools.simplesharedpref.extensions.pipeNullable
@@ -18,13 +21,17 @@ var PrefGlobeConfig.moshi: Moshi?
 
 val moshiNullError = IllegalStateException("Moshi has not been set to Kotpref")
 
-fun <T : Any> byMoshi(clazz: Class<T>, moshi: Moshi = defaultMoshi ?: throw moshiNullError): Pipe<String, T> {
+fun <T : Any> byMoshi(clazz: Class<T>, moshi: Moshi = defaultMoshi
+    ?: throw moshiNullError
+): Pipe<String, T> {
     val adapter = moshi.adapter(clazz)
     return createPipe(write = { r -> adapter.toJson(r) },
         read = { w -> adapter.fromJson(w)!! })
 }
 
-fun <T : Any> byMoshi(typeOfT: Type, moshi: Moshi = defaultMoshi ?: throw moshiNullError): Pipe<String, T> {
+fun <T : Any> byMoshi(typeOfT: Type, moshi: Moshi = defaultMoshi
+    ?: throw moshiNullError
+): Pipe<String, T> {
     val adapter = moshi.adapter<T>(typeOfT)
     return createPipe(write = { r -> adapter.toJson(r) },
         read = { w -> adapter.fromJson(w)!! })

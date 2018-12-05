@@ -1,6 +1,9 @@
-package indi.yume.tools.simplesharedpref
+package indi.yume.tools.simplesharedpref.gson
 
 import com.google.gson.Gson
+import indi.yume.tools.simplesharedpref.Pipe
+import indi.yume.tools.simplesharedpref.PrefGlobeConfig
+import indi.yume.tools.simplesharedpref.SharedField
 import indi.yume.tools.simplesharedpref.extensions.createPipe
 import indi.yume.tools.simplesharedpref.extensions.nonNull
 import indi.yume.tools.simplesharedpref.extensions.pipeNullable
@@ -18,10 +21,14 @@ var PrefGlobeConfig.gson: Gson?
 
 val gsonNullError = IllegalStateException("Gson has not been set to Kotpref")
 
-fun <T : Any> byGson(clazz: Class<T>, gson: Gson = defaultGson ?: throw gsonNullError): Pipe<String, T> =
+fun <T : Any> byGson(clazz: Class<T>, gson: Gson = defaultGson
+    ?: throw gsonNullError
+): Pipe<String, T> =
     createPipe(write = { r -> gson.toJson(r) }, read = { w -> gson.fromJson(w, clazz)!! })
 
-fun <T : Any> byGson(typeOfT: Type, gson: Gson = defaultGson ?: throw gsonNullError): Pipe<String, T> =
+fun <T : Any> byGson(typeOfT: Type, gson: Gson = defaultGson
+    ?: throw gsonNullError
+): Pipe<String, T> =
     createPipe(write = { r -> gson.toJson(r) }, read = { w -> gson.fromJson(w, typeOfT)!! })
 
 inline fun <reified T : Any> byGson(gson: Gson = PrefGlobeConfig.gson ?: throw gsonNullError): Pipe<String, T> =
