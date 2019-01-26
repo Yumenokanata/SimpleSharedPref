@@ -30,9 +30,9 @@ allprojects {
 Step 2. Add the dependency in your module's gradle file
 ```groovy
 dependencies {
-    implementation 'com.github.Yumenokanata.SimpleSharedPref:simplesharedpref:0.6'
-    implementation 'com.github.Yumenokanata.SimpleSharedPref:gson-pref:0.6' // optional
-    implementation 'com.github.Yumenokanata.SimpleSharedPref:moshi-pref:0.6' // optional
+    implementation 'com.github.Yumenokanata.SimpleSharedPref:simplesharedpref:0.6.1'
+    implementation 'com.github.Yumenokanata.SimpleSharedPref:gson-pref:0.6.1' // optional
+    implementation 'com.github.Yumenokanata.SimpleSharedPref:moshi-pref:0.6.1' // optional
 }
 ```
 
