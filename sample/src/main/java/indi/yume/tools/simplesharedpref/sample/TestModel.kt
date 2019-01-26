@@ -1,8 +1,10 @@
-package indi.yume.tools.simplesharedpref
+package indi.yume.tools.simplesharedpref.sample
 
 import android.content.Context
 import com.google.gson.Gson
 import com.squareup.moshi.Moshi
+import indi.yume.tools.simplesharedpref.Pipe
+import indi.yume.tools.simplesharedpref.PrefModel
 import indi.yume.tools.simplesharedpref.extensions.*
 import indi.yume.tools.simplesharedpref.gson.byGson
 import indi.yume.tools.simplesharedpref.gson.gsonNullablePref
@@ -67,7 +69,7 @@ object TestModel : PrefModel() {
      * Use moshi-pref need set PrefGlobeConfig.moshi first.
      */
     var moshiItem: TestBean by stringNullablePref
-        .pipeNullable(byMoshi<TestBean>(Moshi.Builder().build()))
+        .flatMapNullable(byMoshi<TestBean>(Moshi.Builder().build()))
         .pipe(nonNull(TestBean("empty")))
         .bind()
 
@@ -77,7 +79,7 @@ object TestModel : PrefModel() {
      * Use gson-pref need set PrefGlobeConfig.gson first.
      */
     var gsonItem: TestBean by stringNullablePref
-        .pipeNullable(byGson<TestBean>(Gson()))
+        .flatMapNullable(byGson<TestBean>(Gson()))
         .pipe(nonNull(TestBean("empty")))
         .bind()
 

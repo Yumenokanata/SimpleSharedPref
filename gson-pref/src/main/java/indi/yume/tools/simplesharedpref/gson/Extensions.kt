@@ -4,10 +4,7 @@ import com.google.gson.Gson
 import indi.yume.tools.simplesharedpref.Pipe
 import indi.yume.tools.simplesharedpref.PrefGlobeConfig
 import indi.yume.tools.simplesharedpref.SharedField
-import indi.yume.tools.simplesharedpref.extensions.createPipe
-import indi.yume.tools.simplesharedpref.extensions.nonNull
-import indi.yume.tools.simplesharedpref.extensions.pipeNullable
-import indi.yume.tools.simplesharedpref.extensions.stringNullablePref
+import indi.yume.tools.simplesharedpref.extensions.*
 import java.lang.reflect.Type
 
 
@@ -23,26 +20,26 @@ val gsonNullError = IllegalStateException("Gson has not been set to Kotpref")
 
 fun <T : Any> byGson(clazz: Class<T>, gson: Gson = defaultGson
     ?: throw gsonNullError
-): Pipe<String, T> =
-    createPipe(write = { r -> gson.toJson(r) }, read = { w -> gson.fromJson(w, clazz)!! })
+): Pipe<String, T?> =
+    createPipe(write = { r -> gson.toJson(r) }, read = { w -> gson.fromJson(w, clazz) })
 
 fun <T : Any> byGson(typeOfT: Type, gson: Gson = defaultGson
     ?: throw gsonNullError
-): Pipe<String, T> =
-    createPipe(write = { r -> gson.toJson(r) }, read = { w -> gson.fromJson(w, typeOfT)!! })
+): Pipe<String, T?> =
+    createPipe(write = { r -> gson.toJson(r) }, read = { w -> gson.fromJson(w, typeOfT) })
 
-inline fun <reified T : Any> byGson(gson: Gson = PrefGlobeConfig.gson ?: throw gsonNullError): Pipe<String, T> =
+inline fun <reified T : Any> byGson(gson: Gson = PrefGlobeConfig.gson ?: throw gsonNullError): Pipe<String, T?> =
     byGson(T::class.java, gson)
 
 
 inline fun <reified T : Any> gsonNullablePref(gson: Gson = PrefGlobeConfig.gson ?: throw gsonNullError) : SharedField<T?> =
-    stringNullablePref.pipeNullable(byGson(gson))
+    stringNullablePref.flatMapNullable(byGson(gson))
 
 fun <T : Any> gsonNullablePref(clazz: Class<T>, gson: Gson = PrefGlobeConfig.gson ?: throw gsonNullError) : SharedField<T?> =
-    stringNullablePref.pipeNullable(byGson(clazz, gson))
+    stringNullablePref.flatMapNullable(byGson(clazz, gson))
 
 fun <T : Any> gsonNullablePref(typeOfT: Type, gson: Gson = PrefGlobeConfig.gson ?: throw gsonNullError) : SharedField<T?> =
-    stringNullablePref.pipeNullable(byGson(typeOfT, gson))
+    stringNullablePref.flatMapNullable(byGson(typeOfT, gson))
 
 
 inline fun <reified T : Any> gsonPref(defValue: T, gson: Gson = PrefGlobeConfig.gson ?: throw gsonNullError) : SharedField<T> =

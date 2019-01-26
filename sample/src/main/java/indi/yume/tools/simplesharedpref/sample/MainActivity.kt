@@ -1,4 +1,4 @@
-package indi.yume.tools.simplesharedpref
+package indi.yume.tools.simplesharedpref.sample
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle

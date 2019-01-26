@@ -42,6 +42,9 @@ fun <T : Enum<T>> fromEnum(enumClass: Class<T>): Pipe<String, T> =
 fun <W : Any, R : Any> SharedField<W?>.pipeNullable(pip: Pipe<W, R>): SharedField<R?> =
     this.pipe(mapNullable(pip))
 
+fun <W : Any, R : Any> SharedField<W?>.flatMapNullable(pip: Pipe<W, R?>): SharedField<R?> =
+    this.pipe(flatmapNullable(pip))
+
 infix fun <W, C, R> Pipe<W, C>.pipe(process: Pipe<C, R>): Pipe<W, R> =
     Pipe(get = { w -> process.get(get(w)) },
         reverseGet = { r -> reverseGet(process.reverseGet(r)) })
@@ -65,6 +68,10 @@ fun <W, R> map(write: (R) -> W, read: (W) -> R): Pipe<W, R> =
     Pipe(get = read, reverseGet = write)
 
 fun <W : Any, R : Any> mapNullable(pip: Pipe<W, R>): Pipe<W?, R?> =
+    map(write = { r -> if (r != null) pip.reverseGet(r) else null },
+        read = { w -> if (w != null) pip.get(w) else null })
+
+fun <W : Any, R : Any> flatmapNullable(pip: Pipe<W, R?>): Pipe<W?, R?> =
     map(write = { r -> if (r != null) pip.reverseGet(r) else null },
         read = { w -> if (w != null) pip.get(w) else null })
 
